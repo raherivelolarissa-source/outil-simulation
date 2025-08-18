@@ -1,0 +1,178 @@
+{
+  "ATR72-500-DIE": {
+    "atterrissage_adema": 105512.04,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-500-FTU": {
+    "atterrissage_adema": 112588.73,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 960000.0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-500-MJN": {
+    "atterrissage_adema": 42050.59,
+    "atterrissage_asecna": 57349.0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 571624.0,
+    "approche_adema": 0
+  },
+  "ATR72-500-MOQ": {
+    "atterrissage_adema": 166982.06,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-500-NOS": {
+    "atterrissage_adema": 45260.04,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 408992.82,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-500-SMS": {
+    "atterrissage_adema": 129628.8,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 600000.0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-500-SVB": {
+    "atterrissage_adema": 103075.78,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-500-TLE": {
+    "atterrissage_adema": 103075.78,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 668219.24,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-500-TMM": {
+    "atterrissage_adema": 36630.89,
+    "atterrissage_asecna": 57349.0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 571624.0,
+    "approche_adema": 0
+  },
+  "ATR72-500-TNR": {
+    "atterrissage_adema": 0,
+    "atterrissage_asecna": 57349.0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 571624.0,
+    "approche_adema": 0
+  },
+  "ATR72-500-WMN": {
+    "atterrissage_adema": 32448.0,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 0,
+    "approche_adema": 36693.6
+  },
+  "ATR72-600-DIE": {
+    "atterrissage_adema": 114444.74,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-600-FTU": {
+    "atterrissage_adema": 122120.63,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 960000.0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-600-MJN": {
+    "atterrissage_adema": 45248.92,
+    "atterrissage_asecna": 62326.0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 571624.0,
+    "approche_adema": 0
+  },
+  "ATR72-600-MOQ": {
+    "atterrissage_adema": 181118.23,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-600-NOS": {
+    "atterrissage_adema": 49092.12,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 408992.82,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-600-SMS": {
+    "atterrissage_adema": 140603.4,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 600000.0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-600-SVB": {
+    "atterrissage_adema": 111802.25,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-600-TLE": {
+    "atterrissage_adema": 111802.25,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 668219.24,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  },
+  "ATR72-600-TMM": {
+    "atterrissage_adema": 39417.0,
+    "atterrissage_asecna": 62326.0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 571624.0,
+    "approche_adema": 0
+  },
+  "ATR72-600-TNR": {
+    "atterrissage_adema": 0,
+    "atterrissage_asecna": 62326.0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 571624.0,
+    "approche_adema": 0
+  },
+  "ATR72-600-WMN": {
+    "atterrissage_adema": 33446.4,
+    "atterrissage_asecna": 0,
+    "atterrissage_ravinala": 0,
+    "balisage_adema": 0,
+    "balisage_asecna": 0,
+    "approche_adema": 0
+  }
+}

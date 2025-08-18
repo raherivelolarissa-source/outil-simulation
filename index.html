@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simulateur de rotation – Interface opérationnelle</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    :root{
+      --bg:#f0f2f5;--card:#fff;--prim:#2c3e50;--prim-dark:#1a242f;--radius:8px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:#333;}
+    h1{text-align:center;color:var(--prim);margin:20px 0 10px}
+
+    #topBar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: var(--card);
+      padding: 12px 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    #topBar > div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #topBar label {
+      cursor: pointer;
+      user-select: none;
+    }
+    #topBar input[type="number"], #topBar input[type="checkbox"] {
+      cursor: pointer;
+    }
+    #topBar button {
+      background: var(--prim);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    #topBar button:hover {
+      background: var(--prim-dark);
+    }
+    #rateMsg {
+      color: #555;
+      margin-left: 8px;
+      min-width: 150px;
+    }
+
+    main {
+      padding: 20px;
+      max-width: 100vw;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      table-layout: fixed;
+      word-wrap: break-word;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    th {
+      background: var(--prim);
+      color: #fff;
+    }
+    .ok { color: green; }
+    .ko { color: red; }
+
+    tbody tr:hover {
+      background: #eef4fb;
+    }
+
+    .group-row {
+      background-color: #dde6f0;
+      font-weight: bold;
+      text-align: left;
+    }
+    table#tblVols th:nth-child(1) { width: 50px}
+    table#tblVols th:nth-child(2) { width: 200px; }
+
+    .escale-row {
+  background-color: #e0f0ff;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+
+    button.details-btn {
+  background: var(--prim);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+button.details-btn:hover {
+  background: var(--prim-dark);
+}
+.details-row {
+  background: #f9f9f9;
+  display: none;
+}
+.details-row td {
+  padding: 5px 10px;
+  background-color: #f9f9f9;
+  border-top: none;
+}
+
+.details-card {
+  font-size: 0.9em;
+  line-height: 1.4em;
+}
+
+
+.details-row ul {
+  list-style: inside disc;
+  margin: 0;
+  padding-left: 0;
+}
+.avion-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.avion-group input[type="text"] {
+  width: 100%;
+  max-width: 150px;
+  font-size: 13px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.avion-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  color: #444;
+  font-weight: 600;
+}
+
+.avion-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #e74c3c;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: box-shadow 0.2s ease;
+}
+
+.avion-group input[type="checkbox"]:hover {
+  box-shadow: 0 0 5px 2px rgba(231, 76, 60, 0.5);
+}
+
+.avion-group input[type="checkbox"]:checked + .label-text {
+  color: #c0392b;
+  font-weight: 700;
+  position: relative;
+}
+
+.avion-group input[type="checkbox"]:checked + .label-text::before {
+  content: "⚠️";
+  margin-right: 6px;
+  position: relative;
+  top: 1px;
+  font-size: 16px;
+}
+
+.passager-input {
+  width: 60px;
+  text-align: center;
+  padding: 4px;
+  font-size: 14px;
+}
+.balisage {
+  font-size: 1em;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.balisage.ko::before {
+  content: "⚠️ ";
+  margin-right: 2px;
+}
+.details-card {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  font-size: 0.95em;
+}
+
+.cost-line {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+  padding-bottom: 2px;
+  border-bottom: 1px dashed #ccc;
+}
+
+.details-icon {
+  margin-left: 8px;
+  font-size: 0.85em;
+  padding: 2px 6px;
+  background-color: #e6f0ff;
+  border: 1px solid #0077cc;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #0077cc;
+  transition: background-color 0.2s;
+}
+
+.details-icon:hover {
+  background-color: #d0e7ff;
+}
+
+table#tblVols th {
+  white-space: normal; /* autorise le retour à la ligne */
+  word-wrap: break-word; /* coupe les mots trop longs */
+  hyphens: auto; /* coupe les mots avec un tiret si possible */
+  line-height: 1.2em; /* un peu plus compact */
+  padding: 6px 8px; /* réduit un peu le padding pour compenser */
+}
+
+table#tblVols th:nth-child(1) {
+  width: 40px; /* plus petit pour # */
+}
+
+table#tblVols th:nth-child(2) {
+  width: 220px; /* plus large pour Route */
+}
+/* Liste coûts manuels : vertical et style spécifique */
+.liste-couts {
+  max-height: 130px;
+  overflow-y: auto;
+  padding-left: 0;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fafafa;
+  list-style: none;
+  display: block; /* IMPORTANT pour désactiver flex hérité */
+}
+
+.liste-couts li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  color: #333;
+}
+
+.liste-couts li:last-child {
+  border-bottom: none;
+}
+
+/* Bouton supprimer rouge et bien visible */
+.btn-supprimer {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 18px;
+  text-align: center;
+  padding: 0;
+  margin-left: 12px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-supprimer:hover {
+  background-color: #cc0000;
+  transform: scale(1.1);
+}
+
+.btn-supprimer:active {
+  transform: scale(0.95);
+}
+
+/* Bouton + Ajouter un coût */
+.btn-plus {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.btn-plus:hover {
+  background-color: #218838;
+}
+
+/* Formulaire d’ajout - séparation et layout */
+.ajout-cout-manuel {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #ccc;
+}
+
+.form-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.input-cost,
+.input-motif {
+  flex: 1 1 140px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.btn-ajouter {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.btn-ajouter:hover {
+  background-color: #125aa0;
+}
+.routes-cell {
+  max-width: 200px; /* ou 250px selon espace disponible */
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+</style>
+</head>
+<body>
+  <h1>🛫 Simulateur de rotation</h1>
+
+  <div id="topBar">
+    <div>
+      <label for="inpRate">💱 Taux USD → MGA</label>
+      <input type="number" id="inpRate" min="0" step="1" value="4500" style="width:80px;">
+      <button id="btnRate">🔄 Actualiser</button>
+      <span id="rateMsg"></span>
+    </div>
+
+    <div>
+     <label><input type="checkbox" id="cbIndispoAvion"> Indisponibilité d'avion</label>
+  <div id="indispo-avion-options" style="display:none; margin-top:10px; border:1px solid #ccc; padding:8px; max-width:350px;">
+    <label>
+      Avion (type & matricule) :
+      <select id="select-indispo-avion" style="width:100%; padding:6px; font-size:14px;">
+        <!-- options générées en JS -->
+      </select>
+    </label>
+  </div>
+     <label><input type="checkbox" id="cbRavitail"> Escale</label>
+<div id="message-erreur" style="color: red; font-weight: bold; margin-bottom: 10px;"></div>
+<div id="escale-fields" style="display: none; margin-top:10px;">
+  <label for="typeEscale">Type d’escale :</label>
+  <select id="typeEscale">
+    <option value="standard">Sans hébergement</option>
+    <option value="hebergement">Avec hébergement</option>
+  </select>
+
+  <br><br>
+
+<label>Heure départ :
+  <input type="time" id="heureDepartEscale">
+</label>
+<label>Heure arrivée :
+  <input type="time" id="heureArriveeEscale">
+</label>
+
+</div>
+
+<div id="ravitail-options" style="display:none; margin-top:10px; border:1px solid #ccc; padding:8px; max-width:350px;">
+  <label>
+    Vol concerné :
+    <select id="select-vol-ravitail"></select>
+  </label>
+  <br><br>
+  <label>
+    Escale (aéroport) :
+    <select id="select-escale">
+      <!-- options générées en JS -->
+    </select>
+  </label>
+</div>
+
+    </div>
+
+    <div>
+      <button class="btn" id="btnSimuler">💡 Simuler</button>
+    </div>
+  </div>
+
+  <main>
+    <h2>📝 Paramétrage des vols</h2>    
+    <table id="tblVols">
+      <thead>
+        <tr>
+          <th>#</th><th>Route</th><th>Date</th><th>Heure départ</th><th>Heure arrivée</th>
+          <th>Avion &amp; Matricule</th>
+          <th>Nb passagers</th>
+          <th>Prix éco (MGA)</th><th>Prix affaire (MGA)</th>
+          <th>Balisage</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyVols"></tbody>
+    </table>
+    <div id="resultats" style="margin-top:30px"></div>
+  </main>
+
+<script>
+let vols = [], durees = {}, carburant = {}, couts = {}, prixUSD = {}, usdToMGA = 4500;
+let airportsFromPrices = [];
+let sunTimes = {};
+const coordonneesAeroports = {
+  "ANM": { lat: -16.1639, lon: 49.7738 }, // Antalaha
+  "DIE": { lat: -12.3494, lon: 49.2917 }, // Diego Suarez
+  "FTU": { lat: -25.0381, lon: 46.9561 }, // Fort Dauphin
+  "MJN": { lat: -15.6672, lon: 46.3512 }, // Mahajanga
+  "MNJ": { lat: -21.7170, lon: 45.3330 }, // Mananjary
+  "MOQ": { lat: -20.2847, lon: 44.3176 }, // Morondava
+  "NOS": { lat: -13.3121, lon: 48.3148 }, // Nosy Be
+  "SVB": { lat: -14.2786, lon: 50.1747 }, // Sambava
+  "TLE": { lat: -23.3834, lon: 43.7285 }, // Toliara
+  "TMM": { lat: -18.1095, lon: 49.3925 }, // Toamasina (Tamatave)
+  "TNR": { lat: -18.7969, lon: 47.4788 }, // Antananarivo
+  "WAI": { lat: -14.8980, lon: 47.9939 }, // Antsohihy
+  "WFI": { lat: -21.4416, lon: 47.1117 }, // Fianarantsoa
+  "SMS": { lat: -17.0939, lon: 49.8158 }, // Sainte Marie
+  "WMN": { lat: -15.4367, lon: 49.6884 }  // Maroantsetra
+};
+function calculerDistanceNM(code1, code2) {
+  const R = 3440.065; // rayon de la Terre en miles nautiques
+  const a1 = coordonneesAeroports[code1];
+  const a2 = coordonneesAeroports[code2];
+  if (!a1 || !a2) return 0;
+
+  const toRad = deg => deg * Math.PI / 180;
+  const dLat = toRad(a2.lat - a1.lat);
+  const dLon = toRad(a2.lon - a1.lon);
+  const lat1 = toRad(a1.lat);
+  const lat2 = toRad(a2.lat);
+
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c);
+}
+
+
+// Formate nombre en string local fr avec séparation milliers
+const fmt = n => Number(n).toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+
+// Convertit "HH:MM" ou "XhYYmin" en minutes depuis minuit
+function parseMinutes(val) {
+  if (typeof val === 'number') return val;
+  if (typeof val === 'string') {
+    val = val.trim();
+    let m = val.match(/^(\d{1,2})h(\d{2})min$/i);
+    if (m) return (+m[1]) * 60 + (+m[2]);
+    m = val.match(/^(\d{1,2}):(\d{2})$/);
+    if (m) return (+m[1]) * 60 + (+m[2]);
+    const n = Number(val);
+    if (!isNaN(n)) return n;
+  }
+  return NaN;
+}
+
+function getAvionsMatricules() {
+  const mapAvions = new Map();
+
+  vols.forEach(v => {
+    if (v.type_avion && v.matricule) {
+      if (!mapAvions.has(v.type_avion)) {
+        mapAvions.set(v.type_avion, new Set());
+      }
+      mapAvions.get(v.type_avion).add(v.matricule);
+    }
+  });
+
+  // Retourne un tableau [ [type_avion, matricule], ... ] pour chaque combinaison
+  const result = [];
+  for (const [type, matricules] of mapAvions.entries()) {
+    for (const m of matricules) {
+      result.push([type, m]);
+    }
+  }
+  return result;
+}
+
+const avionsIndisponibles = new Set();
+
+//Escale
+const cbRavitail = document.getElementById('cbRavitail');
+const divRavitailOptions = document.getElementById('ravitail-options');
+const selectVolRavitail = document.getElementById('select-vol-ravitail');
+const selectEscale = document.getElementById('select-escale');
+const escaleFields = document.getElementById('escale-fields');
+
+  cbRavitail.addEventListener('change', () => {
+    if (cbRavitail.checked) {
+      escaleFields.style.display = 'block';
+    } else {
+      escaleFields.style.display = 'none';
+    }
+  });
+
+
+// Remplir la liste des vols (avec id et route par exemple)
+function remplirSelectVols() {
+  selectVolRavitail.innerHTML = vols.map(v =>
+    `<option value="${v.id}">${v.id} (${v.depart}→${v.arrivee})</option>`
+  ).join('');
+}
+
+// Remplir la liste des codes aéroport
+function remplirSelectAeroports() {
+  const aeroports = Object.keys(coordonneesAeroports).sort();
+  selectEscale.innerHTML = aeroports.map(code =>
+    `<option value="${code}">${code}</option>`
+  ).join('');
+   // Force la sélection sur la première option
+  if (aeroports.length > 0) {
+    selectEscale.value = aeroports[0];
+    // Puis déclenche l'événement "change" pour mettre à jour ravitaillementData.escaleCode
+    selectEscale.dispatchEvent(new Event('change'));
+  }
+}
+
+function mettreAJourRavitaillement() {
+  const escaleCode = document.getElementById('select-escale').value;
+  const typeEscale = document.getElementById('typeEscale').value;
+  const heureArriveeEscale = document.getElementById('heureArriveeEscale').value;
+  const heureDepartEscale = document.getElementById('heureDepartEscale').value;
+  const volId = document.getElementById('select-vol-ravitail').value;
+
+  ravitaillementData = {
+    escaleCode,
+    typeEscale,
+    heureArriveeEscale,
+    heureDepartEscale,
+    volId,
+  };
+
+  console.log("Ravitaillement data :", ravitaillementData);
+}
+
+
+
+// Afficher ou cacher les options quand on coche/décoche la checkbox
+cbRavitail.addEventListener('change', () => {
+  if (cbRavitail.checked) {
+    divRavitailOptions.style.display = 'block';
+    // Remplir selects si jamais pas fait
+    remplirSelectVols();
+    remplirSelectAeroports();
+    selectVolRavitail.dispatchEvent(new Event('change'));
+  } else {
+    divRavitailOptions.style.display = 'none';
+  }
+});
+let ravitaillementData = {
+  volId: null,
+  escaleCode: null,
+};
+
+selectVolRavitail.addEventListener('change', () => {
+  // Garde la valeur telle quelle, sans parseInt
+  ravitaillementData.volId = selectVolRavitail.value;
+  console.log("Vol sélectionné (ID):", ravitaillementData.volId);
+});
+
+
+selectEscale.addEventListener('change', () => {
+  ravitaillementData.escaleCode = selectEscale.value;
+  console.log("Escalade sélectionnée (code IATA) :", ravitaillementData.escaleCode);
+});
+
+
+// Calcule l'heure d'arrivée en string "HH:MM" à partir du départ et durée vol
+function getArrivalTime(v) {
+  // Prioriser heure_arrivee_saisie si définie (utile pour escale)
+  if (v.heure_arrivee_saisie) {
+    return v.heure_arrivee_saisie;
+  }
+
+  const key1 = `${v.depart}-${v.arrivee}`;
+  const key2 = `${v.arrivee}-${v.depart}`;
+  const minutes = parseMinutes(durees[key1] ?? durees[key2]);
+  if (isNaN(minutes) || !v.heure_depart || !v.date_depart) return null;
+
+  const departDate = new Date(`${v.date_depart}T${v.heure_depart}`);
+  if (isNaN(departDate)) return null;
+
+  const arrivalDate = new Date(departDate.getTime() + minutes * 60000);
+  if (isNaN(arrivalDate)) return null;
+
+  return arrivalDate.toTimeString().slice(0, 5);
+}
+
+
+function getDepartTime(v) {
+  if (!v.heure_depart || !v.date_depart) return null;
+  const departDate = new Date(`${v.date_depart}T${v.heure_depart}`);
+  if (isNaN(departDate)) return null;
+  return departDate.toTimeString().slice(0, 5);
+}
+
+// Converti USD en MGA selon taux
+const usd = val => (val || 0) * usdToMGA;
+
+// Charge toutes les données JSON nécessaires
+Promise.all([
+  fetch('data/vols.json').then(r => r.json()),
+  fetch('data/durees.json').then(r => r.json()),
+  fetch('data/carburant.json').then(r => r.json()),
+  fetch('data/couts.json').then(r => r.json()),
+  fetch('data/prix_pax_usd.json').then(r => r.json()).catch(() => ({})),
+  fetch('data/sun_times.json').then(r => r.json()).catch(() => ({})),
+  fetch('data/hebergement.json').then(r => r.json()).catch(() => ({})) 
+]).then(([v, d, carb, c, px, sun,heberg]) => {
+  vols = v; durees = d; carburant = carb; couts = c; prixUSD = px; sunTimes = sun;hebergement = heberg;
+console.log("🟡 sunTimes keys:", Object.keys(sunTimes));
+
+  // Recupère la liste des aéroports des prix
+  const set = new Set();
+  Object.keys(prixUSD).forEach(route => {
+    const [dep, arr] = route.split('-');
+    set.add(dep); set.add(arr);
+  });
+  airportsFromPrices = Array.from(set).sort();
+
+  buildTable();
+  console.log("Prix USD chargé:", prixUSD);
+}).catch(err => alert('Erreur chargement JSON : ' + err));
+
+function getHebergementCost(codeIATA) {
+  if (!hebergement || !hebergement[codeIATA]) return 0;
+  return hebergement[codeIATA];
+}
+
+
+// Actualisation taux USD->MGA
+function refreshRate() {
+  const msg = document.getElementById('rateMsg');
+  msg.textContent = 'Chargement…';
+
+  fetch('https://api.exchangerate.host/latest?base=USD&symbols=MGA')
+    .then(r => r.json())
+    .then(js => {
+      const taux = js?.rates?.MGA;
+      if (!taux) throw 'Réponse API invalide';
+
+      usdToMGA = taux;
+      document.getElementById('inpRate').value = Math.round(usdToMGA);
+      msg.textContent = 'Taux mis à jour ✔️';
+      updateAllPrices();
+    })
+    .catch(() => {
+      msg.textContent = 'Échec mise à jour, entrez manuellement.';
+    });
+}
+document.getElementById('btnRate').onclick = refreshRate;
+document.getElementById('inpRate').onchange = e => {
+  usdToMGA = +e.target.value || usdToMGA;
+  updateAllPrices();
+};
+
+
+function updatePassagers(input) {
+  const i = +input.dataset.i;
+  const field = input.dataset.f;
+  const val = parseInt(input.value, 10) || 0;
+
+  if (!vols[i].nb_passagers || typeof vols[i].nb_passagers !== 'object') {
+    vols[i].nb_passagers = { economique: 0, affaire: 0 };
+  }
+
+  vols[i].nb_passagers[field === 'eco' ? 'economique' : 'affaire'] = val;
+}
+
+function ajouterVolEscale() {
+  if (!ravitaillementData || !ravitaillementData.volId || !ravitaillementData.escaleCode) {
+    console.warn("Pas assez d'informations pour créer le vol d'escale.");
+    return;
+  }
+
+  const volOriginal = vols.find(v => v.id === ravitaillementData.volId);
+  if (!volOriginal) return;
+
+  // Dupliquer vol original pour partie escale->destination
+  const volEscale = JSON.parse(JSON.stringify(volOriginal));
+
+  // Identifiant unique pour vol escale (optionnel, ici on ajoute suffixe)
+  volEscale.id = volOriginal.id + "-escale";
+
+  // Départ escale → destination finale
+volEscale.depart = ravitaillementData.escaleCode;
+volEscale.heure_depart = ravitaillementData.heureDepartEscale || "00:00";
+volEscale.heure_arrivee_saisie = ravitaillementData.heureArriveeEscale || "00:00";
+
+
+  // Indiquer que c’est un vol escale
+  volEscale.estEscale = true;
+
+  // Calcul distances (tu as peut-être ta fonction calculerDistanceNM)
+  volEscale.distance_nm = calculerDistanceNM(volEscale.depart, volEscale.arrivee);
+  volOriginal.arrivee = ravitaillementData.escaleCode;
+  volOriginal.distance_nm = calculerDistanceNM(volOriginal.depart, volOriginal.arrivee);
+
+  // Calcul durée en minutes pour volEscale
+  const key1 = `${volEscale.depart}-${volEscale.arrivee}`;
+  const key2 = `${volEscale.arrivee}-${volEscale.depart}`;
+  const dureeEscaleMin = parseMinutes(durees[key1] ?? durees[key2]) || 0;
+
+  // Calcul consommation horaire en litres selon type avion
+  const type = (volEscale.type_avion || "").toUpperCase();
+  let kgH = 0;
+  if (type.includes("ATR75")) kgH = 645;
+  else if (type.includes("ATR76")) kgH = 610;
+
+  const consoLitresH = kgH > 0 ? kgH / 0.8 : 0; // densité 0.8 kg/l
+
+  // Durée vol escale en heures
+  const dureeEscaleH = dureeEscaleMin / 60;
+
+  // Prix carburant au départ du vol escale
+  const prixCarbLitre = carburant[volEscale.depart] || 0;
+
+  // Coût carburant segment escale
+  const coutCarbEscale = dureeEscaleH * consoLitresH * prixCarbLitre;
+
+  volEscale.cout_carburant = coutCarbEscale;
+
+  // Ajouter vol escale dans la liste
+  vols.push(volEscale);
+}
+
+
+
+// Construit le tableau des vols avec les lignes et sélections
+function buildTable() { 
+  const tbody = document.getElementById('tbodyVols');
+  tbody.innerHTML = '';
+  const airports = airportsFromPrices;
+
+  vols.sort((a, b) => a.id.localeCompare(b.id));
+
+  let currentGroup = null;
+
+  // Construire un mapping groupe => index unique
+  const indexParGroupe = {};
+  let indexCompteur = 1;
+
+  vols.forEach(v => {
+    const groupMatch = v.id.match(/^(Vol [A-Z])/);
+    const groupeCle = groupMatch ? groupMatch[1] : 'Autres vols';
+    if (!(groupeCle in indexParGroupe)) {
+      indexParGroupe[groupeCle] = indexCompteur++;
+    }
+    v.groupe = groupeCle;
+  });
+
+  vols.forEach((v, i) => {
+    console.log('Avion:', v.type_avion, '|', v.matricule);
+    if (!airports.includes(v.depart)) v.depart = airports[0] || '';
+    if (!airports.includes(v.arrivee)) v.arrivee = airports[0] || '';
+
+    const groupe = v.groupe;
+
+    if (groupe !== currentGroup) {
+      currentGroup = groupe;
+      const trGroup = document.createElement('tr');
+      trGroup.classList.add('group-row');
+      trGroup.innerHTML = `
+        <td colspan="10">
+          <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+            <span>${currentGroup}</span>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(trGroup);
+    }
+
+    const tr = document.createElement('tr');
+
+    const cleAvion = `${v.type_avion}|${v.matricule}`;
+    const estIndispo = avionsIndisponibles.has(cleAvion);
+    const indicateur = estIndispo ? '<span style="color:red; margin-left:2px;">❌Changer de groupe</span>' : '';
+
+    tr.innerHTML = `
+      <td>${indexParGroupe[groupe]}</td>
+      <td style="position: relative; padding-top: 18px;">
+        ${v.estEscale ? `
+          <div style="
+            position: absolute;
+            top: 4px;
+            left: 2px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: blue;
+            user-select: none;
+          ">[Escale]</div>
+        ` : ''}
+        <select onchange="changerGroupe(${i}, this.value)">
+          ${['Vol A', 'Vol B', 'Vol C'].map(g =>
+            `<option value="${g}" ${v.id.startsWith(g) ? 'selected' : ''}>${g}</option>`
+          ).join('')}
+        </select>
+        ${v.marque ? '<span style="color:red;font-weight:bold;">★</span>' : ''}
+        <select data-i="${i}" data-f="depart" onchange="updateRoute(this)">
+          ${airports.map(a => `<option ${a === v.depart ? 'selected' : ''}>${a}</option>`).join('')}
+        </select>
+        →
+        <select data-i="${i}" data-f="arrivee" onchange="updateRoute(this)">
+          ${airports.map(a => `<option ${a === v.arrivee ? 'selected' : ''}>${a}</option>`).join('')}
+        </select>
+      </td>
+
+      <td><input type="date" value="${v.date_depart}" data-i="${i}" data-f="date_depart" onchange="updateVal(this)"></td>
+      <td><input type="time" value="${v.heure_depart}" data-i="${i}" data-f="heure_depart" onchange="updateVal(this)"></td>
+      <td class="heureArrivee"></td>
+      <td class="avion-group">
+        <input type="text" value="${v.type_avion || ''}" data-i="${i}" data-f="type_avion" placeholder="Type avion" onchange="updateVal(this)">
+        ${indicateur}
+        <input type="text" value="${v.matricule || ''}" data-i="${i}" data-f="matricule" placeholder="Matricule" onchange="updateVal(this)" style="margin-top:4px;">
+        <label>
+          <input type="checkbox" data-i="${i}" onchange="togglePanne(this)" ${v.est_en_panne ? 'checked' : ''}>
+          <span class="label-text">Panne</span>
+        </label>
+      </td>
+      <td>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <input class="passager-input" type="number" value="${v.nb_passagers?.economique || 0}" data-i="${i}" data-f="eco" onchange="updatePassagers(this)" placeholder="Éco">
+          <input class="passager-input" type="number" value="${v.nb_passagers?.affaire || 0}" data-i="${i}" data-f="aff" onchange="updatePassagers(this)" placeholder="Affaire">
+        </div>
+      </td>
+
+      <td class="priceEco"></td>
+      <td class="priceAff"></td>
+      <td class="balisage"></td>
+    `;
+
+    tbody.appendChild(tr);
+
+    // Affichage de l'heure d'arrivée selon le type de vol
+    if (v.estEscale) {
+      // Vol escale → heure arrivée saisie
+      tr.querySelector(".heureArrivee").textContent = v.heure_arrivee_saisie || "—";
+    } else if (v.heure_arrivee_saisie) {
+      // Tronçon avant escale → heure arrivée saisie
+      tr.querySelector(".heureArrivee").textContent = v.heure_arrivee_saisie;
+    } else {
+      // Vol normal sans escale → calcul
+      tr.querySelector(".heureArrivee").textContent = getArrivalTime(v) ?? "—";
+    }
+
+    setPrices(i);
+    
+  });
+  document.getElementById('select-indispo-avion').addEventListener('change', function() {
+    const avionChoisi = this.value;
+    if (avionChoisi) {
+      avionsIndisponibles.add(avionChoisi);
+    }
+    buildTable();
+  });
+}
+
+//Avion indispo
+function remplirSelectIndispoAvion() {
+  const select = document.getElementById('select-indispo-avion');
+  const avions = getAvionsMatricules(); // [[type, matricule], ...]
+  console.log('Liste avions pour indispo:', avions);
+
+  select.innerHTML = `<option value="">-- Sélectionnez un avion --</option>` +
+    avions.map(([type, mat]) => `<option value="${type}|${mat}">${type} (${mat})</option>`).join('');
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('cbIndispoAvion').addEventListener('change', function() {
+    const divOptions = document.getElementById('indispo-avion-options');
+    if(this.checked) {
+      remplirSelectIndispoAvion();
+      divOptions.style.display = 'block';
+    } else {
+      divOptions.style.display = 'none';
+      avionsIndisponibles.clear();
+      buildTable();
+    }
+  });
+
+   document.getElementById('select-escale').addEventListener('change', mettreAJourRavitaillement);
+  document.getElementById('typeEscale').addEventListener('change', mettreAJourRavitaillement);
+  document.getElementById('heureEscale').addEventListener('input', mettreAJourRavitaillement);
+
+  
+
+  document.getElementById('btnSimuler').onclick = simulate;
+});
+
+
+//
+function changerGroupe(indexVol, nouveauGroupe) {
+  const vol = vols[indexVol];
+  if (!vol) return;
+
+  // Extraire suffixe du vol actuel (ex: "Vol A1" → "1")
+  const match = vol.id.match(/^Vol\s*\S+(\d+)$/);
+  const suffixe = match ? match[1] : (indexVol + 1);
+
+  // Construire l'ID cible dans le nouveau groupe
+  const nouvelId = `${nouveauGroupe}${suffixe}`;
+
+  // Chercher dans vols un vol avec le même ID dans le nouveau groupe (avant modification)
+  const volCorrespondant = vols.find(v => v.id === nouvelId);
+
+  // Vérifier si le groupe a changé
+  if (!vol.id.startsWith(nouveauGroupe)) {
+    vol.marque = true; // Marquer comme déplacé
+  }
+
+  // Mettre à jour l'ID du vol
+  vol.id = nouvelId;
+
+  // Mettre à jour type et matricule si vol correspondant trouvé
+  if (volCorrespondant && volCorrespondant !== vol) {
+    vol.type_avion = volCorrespondant.type_avion;
+    vol.matricule = volCorrespondant.matricule;
+  } else {
+    vol.type_avion = '';
+    vol.matricule = '';
+  }
+
+  buildTable();
+}
+
+function togglePanne(checkbox) {
+  const i = +checkbox.dataset.i;
+  vols[i].est_en_panne = checkbox.checked;
+  
+}
+
+let swapFirstIndex = null;
+
+function onSelectSwap(button) {
+  const i = +button.dataset.i;
+
+  if (swapFirstIndex === null) {
+    // Premier vol sélectionné
+    swapFirstIndex = i;
+    button.style.backgroundColor = '#4caf50';
+    button.textContent = '✔️';
+    console.log(`Premier vol sélectionné: ${vols[i].id}`);
+  } else if (swapFirstIndex === i) {
+    // Annuler la sélection
+    resetSwapButtons();
+  } else {
+    // Deuxième vol sélectionné → échanger les données
+    console.log(`Second vol sélectionné: ${vols[i].id}`);
+
+    const v1 = vols[swapFirstIndex];
+    const v2 = vols[i];
+
+    // Échange départ / arrivée
+    [v1.depart, v2.depart] = [v2.depart, v1.depart];
+    [v1.arrivee, v2.arrivee] = [v2.arrivee, v1.arrivee];
+
+    // Échange heures départ
+    [v1.heure_depart, v2.heure_depart] = [v2.heure_depart, v1.heure_depart];
+
+    // Échange nombre de passagers
+    [v1.nb_passagers, v2.nb_passagers] = [v2.nb_passagers, v1.nb_passagers];
+    v1.distance_nm = calculerDistanceNM(v1.depart, v1.arrivee);
+    v2.distance_nm = calculerDistanceNM(v2.depart, v2.arrivee);
+
+    resetSwapButtons();
+    buildTable(); // Reconstruit la table avec mise à jour complète
+  }
+}
+
+
+function resetSwapButtons() {
+  swapFirstIndex = null;
+  // Reset styles et labels boutons échange
+  document.querySelectorAll('.btn-echanger').forEach(btn => {
+    btn.style.backgroundColor = '';
+    btn.textContent = '↕️';
+  });
+}
+function getAvionParGroupe(groupe, vols) {
+  const volsDuGroupe = vols.filter(v => v.groupe === groupe && v.type_avion && v.matricule);
+  if (volsDuGroupe.length > 0) {
+    return { type_avion: volsDuGroupe[0].type_avion, matricule: volsDuGroupe[0].matricule };
+  }
+  // Si aucun avion trouvé pour ce groupe, retourne vide
+  return { type_avion: '', matricule: '' };
+}
+
+
+
+function updateVal(el) {
+  const i = parseInt(el.dataset.i);
+  const f = el.dataset.f;
+  const nv = el.value;
+
+  if (f === "groupe") {
+    vols[i].groupe = nv;
+
+    // Récupère l’avion du groupe cible
+    const avion = getAvionParGroupe(nv, vols);
+
+    // Met à jour le type avion + matricule
+    vols[i].type_avion = avion.type_avion;
+    vols[i].matricule = avion.matricule;
+
+    buildTable();  // Reconstruit le tableau pour mettre à jour les champs visuellement
+    return;
+  }
+
+  // Mise à jour classique
+  vols[i][f] = nv;
+
+  // ⚡️ Si on modifie date_depart ou heure_depart, on met à jour heureArrivee dans la ligne
+  if (f === "date_depart" || f === "heure_depart") {
+    // Trouver la ligne correspondante (hors groupe)
+    const tbody = document.getElementById('tbodyVols');
+    const rows = [...tbody.querySelectorAll('tr:not(.group-row)')];
+    const row = rows.find(r => {
+      const btn = r.querySelector(`button.btn-echanger[data-i="${i}"]`);
+      return !!btn;
+    });
+    if (!row) return;
+
+    const heureArriveeTd = row.querySelector('.heureArrivee');
+    if (heureArriveeTd) {
+      heureArriveeTd.textContent = getArrivalTime(vols[i]) ?? "—";
+    }
+    // Mise à jour balisage et prix
+    setPrices(i);
+  }
+  }
+
+
+function updateRoute(sel) {
+  vols[+sel.dataset.i][sel.dataset.f] = sel.value;
+  setPrices(+sel.dataset.i);
+}
+
+// Cherche prix en USD d'un trajet, ou 0 par défaut
+function getPriceForRoute(dep, arr) {
+  console.log("Recherche prix pour clés:", `${dep}-${arr}`, "ou", `${arr}-${dep}`);
+ const result = prixUSD[`${dep}-${arr}`]
+      || prixUSD[`${arr}-${dep}`]
+      || { eco: 0, aff: 0 };
+      console.log("Prix trouvés:", result);
+  return result;
+}
+
+
+// Déclarations globales (une seule fois)
+const airportNameMap = {
+  "ANM": "ANTALAHA",
+  "DIE": "ANTSIRANANA",
+  "FTU": "FARAFANGANA",
+  "MJN": "MAHAJANGA",
+  "MNJ": "MANANJARY",
+  "MOQ": "MORONDAVA",
+  "NOS": "NOSY BE",
+  "SVB": "SAMBAVA",
+  "TLE": "TOLIARA",
+  "TMM": "TOAMASINA",
+  "TNR": "ANTANANARIVO",
+  "WAI": "ANTSOHIHY",
+  "WFI": "FIANARANTSOA",
+  "SMS": "SAINTE MARIE",
+  "WMN": "MAROANTSETRA"
+};
+
+const moisLettres = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+/**
+ * Récupère les heures de sunrise et sunset pour un code IATA et une date YYYY-MM-DD.
+ * @param {string} codeIATA - Code IATA de l'aéroport.
+ * @param {string} dateStr - Date au format 'YYYY-MM-DD'.
+ * @returns {object|null} - Objet {sunrise, sunset} ou null si données absentes.
+ */
+function getSunTimesForDate(codeIATA, dateStr) {
+  if (typeof sunTimes === "undefined") {
+    console.warn("sun_times.json n'est pas chargé ou défini.");
+    return null;
+  }
+
+  const airportName = airportNameMap[codeIATA.toUpperCase()];
+  if (!airportName) {
+    console.warn(`Nom complet introuvable pour l'aéroport : ${codeIATA}`);
+    return null;
+  }
+
+  const [annee, mois, jourStr] = dateStr.split("-");
+  const jour = parseInt(jourStr, 10);
+  const moisIndex = parseInt(mois, 10) - 1;
+  const moisCode = moisLettres[moisIndex];
+
+  const monthData = sunTimes[airportName]?.[moisCode];
+  if (!monthData) {
+    console.warn(`Pas de données pour ${airportName} en ${moisCode}`);
+    return null;
+  }
+
+  const dayKey = jour <= 14 ? 1 : 15;
+  const selectedEntry = monthData.find(e => e.day === dayKey);
+  if (!selectedEntry) {
+    console.warn(`Pas de données pour le jour ${dayKey} à ${airportName} en ${moisCode}`);
+    return null;
+  }
+
+  return {
+    sunrise: selectedEntry.sunrise || null,
+    sunset: selectedEntry.sunset || null
+  };
+}
+
+/**
+ * Récupère l'heure de sunrise pour un code IATA et une date.
+ */
+function getSunriseForDate(codeIATA, dateStr) {
+  const times = getSunTimesForDate(codeIATA, dateStr);
+  return times?.sunrise || null;
+}
+
+/**
+ * Récupère l'heure de sunset pour un code IATA et une date.
+ */
+function getSunsetForDate(codeIATA, dateStr) {
+  const times = getSunTimesForDate(codeIATA, dateStr);
+  return times?.sunset || null;
+}
+
+/**
+ * Récupère l'heure de sunrise pour le lendemain d'une date donnée.
+ */
+function getSunriseForNextDay(codeIATA, dateStr) {
+  const nextDay = new Date(dateStr);
+  nextDay.setDate(nextDay.getDate() + 1);
+  const dateFormatted = nextDay.toISOString().slice(0, 10); // YYYY-MM-DD
+  return getSunriseForDate(codeIATA, dateFormatted);
+}
+
+// Calcule et met à jour prix et balisage dans la table
+function setPrices(i) {
+  const v = vols[i];
+  
+  // Si vol escale, on force les prix à 0
+  if (v.estEscale) {
+    v.prix_ticket_eco = 0;
+    v.prix_ticket_affaire = 0;
+  } else {
+    const prices = getPriceForRoute(v.depart, v.arrivee);
+    v.prix_ticket_eco = usd(prices.eco);
+    v.prix_ticket_affaire = usd(prices.aff);
+  }
+
+  const arrivalStr = getArrivalTime(v);
+  const departStr = getDepartTime(v);
+  v.heure_arrivee = arrivalStr || '';
+
+  const allRows = Array.from(document.querySelectorAll('#tbodyVols tr'));
+  let volRowCount = -1;
+  let targetRow = null;
+  for (const r of allRows) {
+    if (r.children.length === 1) continue;
+    volRowCount++;
+    if (volRowCount === i) {
+      targetRow = r;
+      break;
+    }
+  }
+  if (!targetRow) return;
+
+  const nbEco = parseInt(targetRow.querySelector('input[data-f="eco"]').value) || 0;
+  const nbAff = parseInt(targetRow.querySelector('input[data-f="aff"]').value) || 0;
+
+  const prixEcoTotal = v.prix_ticket_eco * nbEco;
+  const prixAffTotal = v.prix_ticket_affaire * nbAff;
+
+  targetRow.querySelector('.priceEco').textContent = fmt(prixEcoTotal);
+  targetRow.querySelector('.priceAff').textContent = fmt(prixAffTotal);
+
+  const key = `${v.type_avion}-${v.arrivee}`;
+  const coutAdema = couts[key]?.balisage_adema || 0;
+  const coutAsecna = couts[key]?.balisage_asecna || 0;
+  const balisageVal = coutAdema + coutAsecna;
+
+  const sunset = getSunsetForDate(v.arrivee, v.date_depart); // format HH:mm
+  const sunrise = getSunriseForNextDay(v.arrivee, v.date_depart); // format HH:mm
+
+  const balisageCell = targetRow.querySelector('.balisage');
+
+  if (!arrivalStr || !departStr || !sunset || !sunrise) {
+    console.warn("Balisage fallback — données manquantes : ", {
+      arrivalStr, departStr, sunset, sunrise, vol: v
+    });
+    balisageCell.textContent = balisageVal > 0 ? `Coût balisage : ${fmt(balisageVal)}` : "Pas de coût";
+    balisageCell.className = "balisage ok";
+    return;
+  }
+
+  const arrivalMinutes = parseMinutes(arrivalStr);
+  const departMinutes = parseMinutes(departStr);
+  const sunsetMinutes = parseMinutes(sunset);
+  const sunriseMinutes = parseMinutes(sunrise);
+
+  // On calcule 20 minutes avant le coucher du soleil
+  const sunsetMinus20 = sunsetMinutes - 20;
+
+  const isBetweenSunsetAndSunrise = (minutes) => {
+    // Nuit : après coucher du soleil ou avant lever du soleil
+    return minutes >= sunsetMinutes || minutes <= sunriseMinutes;
+  };
+
+  // Nouvelle condition : départ doit être entre sunrise et sunsetMinus20 (plage autorisée)
+  const isDepartInAllowedWindow = (minutes) => {
+    return minutes >= sunriseMinutes && minutes <= sunsetMinus20;
+  };
+
+  const depNeedsBalisage = isBetweenSunsetAndSunrise(departMinutes);
+  const arrNeedsBalisage = isBetweenSunsetAndSunrise(arrivalMinutes);
+
+  const isDepartAfterSunsetMinus20 = departMinutes > sunsetMinus20;
+const isArrivalAfterSunsetMinus20 = arrivalMinutes > sunsetMinus20;
+
+
+let balisageFinal = balisageVal;
+if (isDepartAfterSunsetMinus20 && isArrivalAfterSunsetMinus20) {
+  balisageFinal = balisageVal * 2;
+}
+
+  // Condition "Pas autorisé" :  
+  // - heure départ en dehors de la plage autorisée (entre sunrise et sunset-20)
+  // - et pas de balisage possible (balisageVal == 0)
+  if (!isDepartInAllowedWindow(departMinutes) && balisageVal === 0) {
+    balisageCell.textContent = "Pas autorisé";
+    balisageCell.className = "balisage ko";
+    return;
+  }
+
+  if (depNeedsBalisage || arrNeedsBalisage) {
+    if (balisageVal > 0) {
+      balisageCell.textContent = `${fmt(balisageFinal)}`;
+      balisageCell.className = "balisage ok";
+      v.cout_balisage = balisageFinal;
+    } else {
+      balisageCell.textContent = "Pas autorisé";
+      balisageCell.className = "balisage ko";
+      v.cout_balisage = 0;
+    }
+  } else {
+    balisageCell.textContent = "Pas de coût";
+    balisageCell.className = "balisage ok";
+    v.cout_balisage = 0;
+  }
+  console.log("setPrices key:", key, "couts[key]:", couts[key]);
+
+}
+
+
+
+// Mise à jour de tous les prix à chaque changement de taux
+function updateAllPrices() {
+  vols.forEach((_, i) => setPrices(i));
+}
+
+function toggleDetails(id) {
+  const el = document.getElementById(id);
+  if (el.style.display === "none" || el.style.display === "") {
+    el.style.display = "block";
+  } else {
+    el.style.display = "none";
+  }
+}
+
+
+// Variable globale pour stocker les coûts manuels
+const coutsManuels = {};
+
+// Affiche les détails des coûts, y compris les coûts manuels ajoutés
+function afficherDetails(detailId) {
+  const container = document.getElementById(`details-${detailId}`);
+  let html = "<ul>";
+
+  // Ajouter les coûts manuels
+  if (coutsManuels[detailId]) {
+    const coutsNonNuls = coutsManuels[detailId].filter(c => c.montant !== 0);
+    
+    if (coutsNonNuls.length > 0) {
+      for (const c of coutsNonNuls) {
+        html += `<li><strong>${c.motif}</strong> : ${c.montant.toLocaleString()} MGA</li>`;
+      }
+    } else {
+      html += "<li>Aucun coût manuel</li>";
+    }
+  } else {
+    html += "<li>Aucun coût manuel</li>";
+  }
+
+  html += "</ul>";
+  container.innerHTML = html;
+}
+
+
+// Ajoute un coût manuel dans coutsManuels, met à jour l’affichage et relance simulate()
+function ajouterCoutManuel(detailId) {
+  const montantInput = document.getElementById(`customCost-${detailId}`);
+  const motifInput = document.getElementById(`customMotif-${detailId}`);
+  const montant = parseFloat(montantInput.value);
+  const motif = motifInput.value.trim();
+
+  if (!isNaN(montant) && montant > 0 && motif !== '') {
+    if (!coutsManuels[detailId]) {
+      coutsManuels[detailId] = [];
+    }
+    coutsManuels[detailId].push({ montant, motif });
+
+    // Vider les champs
+    montantInput.value = '';
+    motifInput.value = '';
+    
+    // Mettre à jour la liste complète des coûts manuels dans le DOM
+    const ul = document.getElementById(`liste-couts-${detailId}`);
+    ul.innerHTML = coutsManuels[detailId].map(c => `<li>${c.motif} : ${c.montant.toLocaleString()} MGA</li>`).join('');
+
+  } else {
+    alert("Veuillez entrer un montant valide et un motif.");
+  }
+  simulate();
+}
+
+function supprimerCoutManuel(detailId, index) {
+  if (!coutsManuels[detailId]) return;
+
+  // Retirer l'élément du tableau
+  coutsManuels[detailId].splice(index, 1);
+
+  // Réactualiser la liste affichée
+  const ul = document.getElementById(`liste-couts-${detailId}`);
+  if (coutsManuels[detailId].length > 0) {
+    ul.innerHTML = coutsManuels[detailId]
+      .map((c, idx) => `
+        <li>
+          ${c.motif} : ${c.montant.toLocaleString()} MGA
+          <button onclick="supprimerCoutManuel('${detailId}', ${idx})" style="margin-left:5px; color:red;">X</button>
+        </li>
+      `)
+      .join('');
+  } else {
+    ul.innerHTML = '<li style="color: #888">Aucun coût manuel</li>';
+  }
+
+  // Recalculer les totaux après suppression
+  recalculerTotaux();
+}
+function recalculerTotaux() {
+  // Ici tu relances ton rendu ou recalcul
+  simulate(); // Par exemple si c’est ta fonction qui régénère toutes les lignes
+}
+function afficherLigneCout(label, valeur) {
+  if (!valeur || valeur === 0) return ''; // ne rien afficher si 0 ou null
+  return `<div class="cost-line"><span>${label} :</span><strong>${fmt(valeur)}</strong></div>`;
+}
+
+function toggleAjoutCout(detailId) {
+  const form = document.getElementById(`container-${detailId}`);
+  const btn = document.getElementById(`btn-plus-${detailId}`);
+
+  if (form.style.display === "none" || form.style.display === "") {
+    form.style.display = "block";  // Affiche le formulaire
+    btn.style.display = "none";    // Cache le bouton
+  } else {
+    form.style.display = "none";   // Cache le formulaire
+    btn.style.display = "inline-block"; // Affiche le bouton
+  }
+}
+
+
+// Modification dans la fonction simulate() au niveau du calcul des coûts totaux
+function simulate() {
+  if (!vols || !carburant || !couts || !hebergement) {
+    console.error('Données manquantes');
+    return;
+  }
+  const messageErreurElem = document.getElementById('message-erreur');
+  if (messageErreurElem) {
+    messageErreurElem.textContent = '';
+  }
+
+  // --- Fonctions utilitaires ---
+  function getFlightDurationMinutes(v) {
+    const key1 = `${v.depart}-${v.arrivee}`;
+    const key2 = `${v.arrivee}-${v.depart}`;
+    return parseMinutes(durees[key1] ?? durees[key2]) || 0;
+  }
+
+  function getHourlyConsumptionLitres(v) {
+    const type = (v.type_avion || "").toUpperCase();
+    let kgH = 0;
+
+    if (type.includes("ATR72-500")) kgH = 645;
+    else if (type.includes("ATR72-600")) kgH = 610;
+
+    return kgH > 0 ? kgH / 0.8 : 0; // conversion kg → litres
+  }
+
+  function getDurationFromUserInput() {
+  if (!ravitaillementData?.heureDepartEscale || !ravitaillementData?.heureArriveeEscale) {
+    console.warn('Heure départ ou arrivée escale manquante');
+    return 0;
+  }
+  console.log(`Heure départ escale: ${ravitaillementData.heureDepartEscale}`);
+  console.log(`Heure arrivée escale: ${ravitaillementData.heureArriveeEscale}`);
+
+  const [hD, mD] = ravitaillementData.heureDepartEscale.split(':').map(Number);
+  const [hA, mA] = ravitaillementData.heureArriveeEscale.split(':').map(Number);
+
+  console.log(`Parsed heure départ escale: ${hD}h${mD}`);
+  console.log(`Parsed heure arrivée escale: ${hA}h${mA}`);
+
+  let duree = (hA * 60 + mA) - (hD * 60 + mD);
+  if (duree < 0) duree += 24 * 60; // Gestion passage minuit
+
+  console.log(`Durée escale calculée : ${duree} minutes`);
+
+  return duree;
+}
+
+  // Données escale
+  const volIdSelectionne = ravitaillementData?.volId;
+  const escaleCode = ravitaillementData?.escaleCode;
+  const typeEscale = ravitaillementData?.typeEscale;
+
+  // Construction index groupes
+  const groupes = [...new Set(vols.map(v => v.groupe))];
+  const indexParGroupe = {};
+  groupes.forEach((g, i) => { indexParGroupe[g] = i + 1; });
+
+  const cumulsParIndex = {};
+  const escalesParIndex = {};
+
+  vols.forEach(v => {
+    const idx = indexParGroupe[v.groupe];
+
+    if (!cumulsParIndex[idx]) {
+      cumulsParIndex[idx] = {
+        revenu: 0,
+        cout: 0,
+        benefice: 0,
+        routes: [],
+        detailsCouts: {},
+      };
+      escalesParIndex[idx] = { escale: false, hebergement: false };
+    }
+
+    cumulsParIndex[idx].routes.push(`${v.depart}→${v.arrivee}`);
+
+    if (v.estEscale) escalesParIndex[idx].escale = true;
+    if (typeEscale === 'hebergement' && volIdSelectionne === v.id) {
+      escalesParIndex[idx].hebergement = true;
+    }
+
+    // --- Calcul carburant vol principal + vol escale ---
+    let coutCarb = 0;
+
+    if (!v.estEscale) {
+      // Vol principal
+
+      // Durée segment principal
+      const dureeMinPrincipal = getFlightDurationMinutes(v);
+      const consoLitresH = getHourlyConsumptionLitres(v);
+      const dureeHPrincipal = dureeMinPrincipal / 60;
+      const prixCarbPrincipal = carburant[v.depart] || 0;
+      coutCarb += dureeHPrincipal * consoLitresH * prixCarbPrincipal;
+
+      console.log(`[Carburant] Vol principal ${v.id}: durée ${dureeMinPrincipal} min (${dureeHPrincipal.toFixed(2)} h), ` +
+        `conso ${consoLitresH.toFixed(2)} L/h, prix/litre ${prixCarbPrincipal}, coût carburant segment: ${coutCarb.toFixed(2)}`);
+
+
+      // Chercher segment escale associé
+      const volEscale = vols.find(
+        ve => ve.estEscale && ve.id.startsWith(v.id)
+      );
+
+      if (volEscale) {
+        const dureeMinEscale = getDurationFromUserInput(); // Utiliser durée saisie par l'utilisateur
+        const dureeHEscale = dureeMinEscale / 60;
+        const consoLitresHEscale = getHourlyConsumptionLitres(volEscale);
+        const prixCarbEscale = carburant[volEscale.depart] || 0;
+        const coutCarbEscale = dureeHEscale * consoLitresHEscale * prixCarbEscale;
+        coutCarb += coutCarbEscale;
+
+        console.log(`[Carburant] Vol escale ${volEscale.id}: durée ${dureeMinEscale} min (${dureeHEscale.toFixed(2)} h), ` +
+          `conso ${consoLitresHEscale.toFixed(2)} L/h, prix/litre ${prixCarbEscale}, coût carburant segment: ${coutCarbEscale.toFixed(2)}`);
+        
+
+      }
+    } else {
+      // Si on boucle sur un vol escale seul (ex: dans vols), on peut calculer aussi normalement
+      const dureeMin = getFlightDurationMinutes(v);
+      const consoLitresH = getHourlyConsumptionLitres(v);
+      const dureeH = dureeMin / 60;
+      const prixCarb = carburant[v.depart] || 0;
+      coutCarb = dureeH * consoLitresH * prixCarb;
+    }
+
+// --- Coûts escale ---
+    const key = `${v.type_avion}-${v.arrivee}`;
+    const cEscal = couts[key] || {};
+    const cAtterrissage = (cEscal.atterrissage_adema || 0) + (cEscal.atterrissage_asecna || 0) + (cEscal.atterrissage_ravinala || 0);
+    const cBalisage = v.cout_balisage || 0;
+    const cApproche = cEscal.approche_adema || 0;
+
+    const nbPassagersTotal = (v.nb_passagers?.economique || 0) + (v.nb_passagers?.affaire || 0);
+
+    // Hébergement
+    let coutHebergement = 0;
+    if (typeEscale === 'hebergement' && volIdSelectionne === v.id) {
+      const hebergUnitCost = getHebergementCost(escaleCode);
+      coutHebergement = hebergUnitCost * nbPassagersTotal;
+    }
+
+// --- Coûts atterrissage et escale ---
+const keyDep = `${v.type_avion}-${v.depart}`;
+const keyArr = `${v.type_avion}-${v.arrivee}`;
+
+const cDep = couts[keyDep] || {};
+const cArr = couts[keyArr] || {};
+
+console.log("cDep:", cDep);
+console.log("cArr:", cArr);
+
+const cAtterrissageDep = (cDep.atterrissage_adema || 0) + (cDep.atterrissage_asecna || 0) + (cDep.atterrissage_ravinala || 0);
+const cAtterrissageArr = (cArr.atterrissage_adema || 0) + (cArr.atterrissage_asecna || 0) + (cArr.atterrissage_ravinala || 0);
+
+console.log("cAtterrissageDep:", cAtterrissageDep, "| cAtterrissageArr:", cAtterrissageArr);
+
+const cAtterrissageTotal = cAtterrissageDep + cAtterrissageArr;
+
+    // Coûts escale supplémentaires
+let cAtterrissageEscale = 0;
+let cApprocheEscale = 0;
+if ((typeEscale === 'hebergement' || typeEscale === 'standard') && volIdSelectionne === v.id) {
+
+  console.log("=== CALCUL COÛTS ESCALE ===");
+    console.log("Type escale:", typeEscale, "| Escale code:", escaleCode);
+
+  const escaleDepKey = `${v.type_avion}-${v.depart}`;      // départ du segment escale
+  const escaleArrKey = `${v.type_avion}-${escaleCode}`;    // arrivée du segment escale
+
+console.log("escaleDepKey:", escaleDepKey, "| escaleArrKey:", escaleArrKey);
+
+  const escaleDep = couts[escaleDepKey] || {};
+  const escaleArr = couts[escaleArrKey] || {};
+
+   console.log("escaleDep:", escaleDep);
+    console.log("escaleArr:", escaleArr);
+
+  const cAtterrissageDepEscale = (escaleDep.atterrissage_adema || 0) + (escaleDep.atterrissage_asecna || 0) + (escaleDep.atterrissage_ravinala || 0);
+  const cAtterrissageArrEscale = (escaleArr.atterrissage_adema || 0) + (escaleArr.atterrissage_asecna || 0) + (escaleArr.atterrissage_ravinala || 0);
+
+  cAtterrissageEscale = cAtterrissageDepEscale + cAtterrissageArrEscale;
+  cApprocheEscale = escaleArr.approche_adema || 0;
+}
+
+
+    let balisageEscale = 0;
+    if (typeof ravitaillementData !== 'undefined' &&
+        escaleCode &&
+        v.id === volIdSelectionne &&
+        ravitaillementData.heureEscale) {
+      const keyEscale = `${v.type_avion}-${escaleCode}`;
+      balisageEscale = (couts[keyEscale]?.balisage_adema || 0) + (couts[keyEscale]?.balisage_asecna || 0);
+    }
+
+    // Coûts manuels
+    const detailId = `detail-${idx}`;
+    let coutsManuelsTotal = 0;
+    if (coutsManuels[detailId]) {
+      coutsManuelsTotal = coutsManuels[detailId].reduce((sum, c) => sum + c.montant, 0);
+    }
+
+    // Coût total
+    const cTot = coutCarb + cAtterrissageTotal + cBalisage + cApproche +
+      (v.est_en_panne ? 200000 : 0) +
+      coutHebergement + cApprocheEscale + balisageEscale +
+      coutsManuelsTotal;
+
+    // Revenu & bénéfice
+    const rev = (v.nb_passagers?.economique || 0) * (v.prix_ticket_eco || 0) +
+                (v.nb_passagers?.affaire || 0) * (v.prix_ticket_affaire || 0);
+    const ben = rev - cTot;
+
+    cumulsParIndex[idx].revenu += rev;
+    cumulsParIndex[idx].cout += cTot;
+    cumulsParIndex[idx].benefice += ben;
+
+    const coutTypes = {
+      'Carburant': coutCarb,
+      'Atterrissage': cAtterrissageTotal,
+      'Balisage': cBalisage,
+      'Approche': cApproche,
+      'Coût panne': v.est_en_panne ? 200000 : 0,
+      'Hébergement': coutHebergement,
+      //'Atterrissage escale': cAtterrissageEscale,
+      //'Approche escale': cApprocheEscale,
+      //'Balisage escale': balisageEscale,
+      'Coûts manuels': coutsManuelsTotal
+    };
+    for (const [lib, val] of Object.entries(coutTypes)) {
+      if (!cumulsParIndex[idx].detailsCouts[lib]) {
+        cumulsParIndex[idx].detailsCouts[lib] = 0;
+      }
+      cumulsParIndex[idx].detailsCouts[lib] += val;
+    }
+  });
+// Trouver le groupe le plus rentable
+  let maxBenefice = -Infinity;
+  let groupePlusRentable = null;
+
+  Object.entries(cumulsParIndex).forEach(([idx, data]) => {
+    if (data.benefice > maxBenefice) {
+      maxBenefice = data.benefice;
+      groupePlusRentable = idx;
+    }
+  });
+
+  // --- Affichage tableau ---
+  // --- Affichage tableau ---
+let html = `<table>
+  <tr>
+    <th>#</th>
+    <th>Routes</th>
+    <th>Escale</th>
+    <th>Revenu</th>
+    <th>Coût</th>
+    <th>Bénéfice</th>
+  </tr>`;
+
+Object.entries(cumulsParIndex).forEach(([idx, data]) => {
+  const escaleInfo = escalesParIndex[idx];
+  let escaleTexte = '—';
+  let escaleColor = 'inherit';
+
+  if (escaleInfo?.escale) {
+    if (escaleInfo.hebergement) {
+      escaleTexte = 'Escale avec hébergement';
+      escaleColor = 'green';
+    } else {
+      escaleTexte = 'Escale sans hébergement';
+      escaleColor = 'blue';
+    }
+  }
+
+  const routesTexte = [...new Set(data.routes)].join(', ');
+
+  // Détails des coûts hors coûts manuels
+  const lignesDetails = Object.entries(data.detailsCouts)
+    .filter(([lib, val]) => val > 0 && lib !== 'Coûts manuels')
+    .map(([lib, val]) => `<div class="cost-line"><span>${lib}</span>: <strong>${fmt(val)}</strong></div>`)
+    .join('');
+
+  const estPlusRentable = (idx === groupePlusRentable);
+  const texteBenefice = `${fmt(data.benefice)}${estPlusRentable ? ' ✅ ' : ''}`;
+
+  html += `
+    <tr>
+      <td>${idx}</td>
+      <td class="routes-cell">${routesTexte}</td>
+      <td style="color: ${escaleColor}; font-weight: bold;">${escaleTexte}</td>
+      <td>${fmt(data.revenu)}</td>
+      <td>
+        <span>${fmt(data.cout)}</span>
+        <button class="details-icon" onclick="toggleDetails('detail-${idx}')">Détails</button>
+        <div class="details-card" id="detail-${idx}" style="display: none; max-width: 400px; margin-top: 5px;">
+          ${lignesDetails || '<em>Aucun coût supplémentaire</em>'}
+
+          <div class="ajout-cout-manuel">
+            <button 
+              id="btn-plus-detail-${idx}"
+              class="btn-plus"
+              onclick="toggleAjoutCout('detail-${idx}')"
+            >
+              ➕ Ajouter un coût manuel
+            </button>
+
+            <div id="container-detail-${idx}" style="display:none;">
+              <div class="form-inline">
+                <input type="number" id="customCost-detail-${idx}" placeholder="Montant" class="input-cost">
+                <input type="text" id="customMotif-detail-${idx}" placeholder="Motif" class="input-motif">
+                <button class="btn-ajouter" onclick="ajouterCoutManuel('detail-${idx}')">Ajouter</button>
+              </div>
+            </div>
+
+           <ul id="liste-couts-detail-${idx}" class="liste-couts">
+  ${(coutsManuels[`detail-${idx}`] && coutsManuels[`detail-${idx}`].length > 0)
+    ? coutsManuels[`detail-${idx}`].map((c, i) => `
+      <li>
+        <span>${c.motif} : ${fmt(c.montant)}</span>
+        <button class="btn-supprimer" onclick="supprimerCoutManuel('detail-${idx}', ${i})">×</button>
+      </li>
+    `).join('')
+    : '<li style="color:#888">Aucun coût manuel</li>'
+  }
+</ul>
+
+          </div>
+        </div>
+      </td>
+      <td class="${data.benefice >= 0 ? 'ok' : 'ko'}">${texteBenefice}</td>
+    </tr>
+  `;
+});
+
+html += '</table>';
+
+const profitGlobal = Object.values(cumulsParIndex).reduce((acc, d) => acc + d.benefice, 0);
+html += `<p style="margin-top:10px"><strong>Résultat global :</strong> <span class="${profitGlobal >= 0 ? 'ok' : 'ko'}">${fmt(profitGlobal)} MGA</span></p>`;
+
+document.getElementById('resultats').innerHTML = html;
+
+}
+
+
+
+document.getElementById('btnSimuler').addEventListener('click', () => {
+  mettreAJourRavitaillement();
+  ajouterVolEscale();
+  buildTable();
+  simulate();
+  })
+
+console.log("btnSimuler:", document.getElementById('btnSimuler'));
+
+
+</script>
+<style>
+  .selected-row {
+    outline: 2px solid var(--prim);
+    background-color: #e3f2fd;
+  }
+</style>
+<script>
+  let firstSelectedRow = null;
+
+  function selectRow(row, volId) {
+    if (firstSelectedRow === row) {
+      row.classList.remove("selected-row");
+      firstSelectedRow = null;
+      return;
+    }
+
+    if (!firstSelectedRow) {
+      firstSelectedRow = row;
+      row.classList.add("selected-row");
+    } else {
+      // Deuxième sélection => on échange
+      swapRows(firstSelectedRow, row);
+
+      // Réinitialisation
+      firstSelectedRow.classList.remove("selected-row");
+      firstSelectedRow = null;
+    }
+  }
+
+  function swapRows(row1, row2) {
+    const parent = row1.parentNode;
+    const row1Index = Array.from(parent.children).indexOf(row1);
+    const row2Index = Array.from(parent.children).indexOf(row2);
+
+    if (row1Index < row2Index) {
+      parent.insertBefore(row2, row1);
+      parent.insertBefore(row1, parent.children[row2Index]);
+    } else {
+      parent.insertBefore(row1, row2);
+      parent.insertBefore(row2, parent.children[row1Index]);
+    }
+
+    // Éventuellement : mettre à jour la structure JS si tu as un tableau de vols
+    const id1 = row1.dataset.volId;
+    const id2 = row2.dataset.volId;
+
+    const index1 = vols.findIndex(v => v.id === id1);
+    const index2 = vols.findIndex(v => v.id === id2);
+    if (index1 !== -1 && index2 !== -1) {
+      [vols[index1], vols[index2]] = [vols[index2], vols[index1]];
+    }
+  }
+
+</script>
+
+</body>
+</html>
