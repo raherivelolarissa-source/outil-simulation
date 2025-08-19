@@ -5,7 +5,7 @@
   <title>Simulateur de rotation – Interface opérationnelle</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <style>
-    :root{
+      :root{
       --bg:#f0f2f5;--card:#fff;--prim:#2c3e50;--prim-dark:#1a242f;--radius:8px;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -453,6 +453,7 @@ table#tblVols th:nth-child(2) {
       </thead>
       <tbody id="tbodyVols"></tbody>
     </table>
+    <button id="btnSimulerSelection">Calculer les vols sélectionnés</button>
     <div id="resultats" style="margin-top:30px"></div>
   </main>
 
@@ -733,6 +734,11 @@ function ajouterVolEscale() {
   }
 
   const volOriginal = vols.find(v => v.id === ravitaillementData.volId);
+
+  // --- Appliquer les heures saisies uniquement au vol départ → escale ---
+volOriginal.heure_depart = ravitaillementData.heureDepartEscale || volOriginal.heure_depart;
+volOriginal.heure_arrivee_saisie = ravitaillementData.heureArriveeEscale || volOriginal.heure_arrivee_saisie;
+
   if (!volOriginal) return;
 
   // Dupliquer vol original pour partie escale->destination
@@ -743,14 +749,15 @@ function ajouterVolEscale() {
 
   // Départ escale → destination finale
 volEscale.depart = ravitaillementData.escaleCode;
-volEscale.heure_depart = ravitaillementData.heureDepartEscale || "00:00";
-volEscale.heure_arrivee_saisie = ravitaillementData.heureArriveeEscale || "00:00";
+volEscale.heure_depart = "";              // utilisateur pourra saisir
+volEscale.heure_arrivee_saisie = "";      // utilisateur pourra saisir
+
 
 
   // Indiquer que c’est un vol escale
   volEscale.estEscale = true;
 
-  // Calcul distances (tu as peut-être ta fonction calculerDistanceNM)
+  // Calcul distances 
   volEscale.distance_nm = calculerDistanceNM(volEscale.depart, volEscale.arrivee);
   volOriginal.arrivee = ravitaillementData.escaleCode;
   volOriginal.distance_nm = calculerDistanceNM(volOriginal.depart, volOriginal.arrivee);
@@ -835,72 +842,65 @@ function buildTable() {
     const estIndispo = avionsIndisponibles.has(cleAvion);
     const indicateur = estIndispo ? '<span style="color:red; margin-left:2px;">❌Changer de groupe</span>' : '';
 
-    tr.innerHTML = `
-      <td>${indexParGroupe[groupe]}</td>
-      <td style="position: relative; padding-top: 18px;">
-        ${v.estEscale ? `
-          <div style="
-            position: absolute;
-            top: 4px;
-            left: 2px;
-            font-size: 0.9em;
-            font-weight: bold;
-            color: blue;
-            user-select: none;
-          ">[Escale]</div>
-        ` : ''}
-        <select onchange="changerGroupe(${i}, this.value)">
-          ${['Vol A', 'Vol B', 'Vol C'].map(g =>
-            `<option value="${g}" ${v.id.startsWith(g) ? 'selected' : ''}>${g}</option>`
-          ).join('')}
-        </select>
-        ${v.marque ? '<span style="color:red;font-weight:bold;">★</span>' : ''}
-        <select data-i="${i}" data-f="depart" onchange="updateRoute(this)">
-          ${airports.map(a => `<option ${a === v.depart ? 'selected' : ''}>${a}</option>`).join('')}
-        </select>
-        →
-        <select data-i="${i}" data-f="arrivee" onchange="updateRoute(this)">
-          ${airports.map(a => `<option ${a === v.arrivee ? 'selected' : ''}>${a}</option>`).join('')}
-        </select>
-      </td>
-
-      <td><input type="date" value="${v.date_depart}" data-i="${i}" data-f="date_depart" onchange="updateVal(this)"></td>
-      <td><input type="time" value="${v.heure_depart}" data-i="${i}" data-f="heure_depart" onchange="updateVal(this)"></td>
-      <td class="heureArrivee"></td>
-      <td class="avion-group">
-        <input type="text" value="${v.type_avion || ''}" data-i="${i}" data-f="type_avion" placeholder="Type avion" onchange="updateVal(this)">
-        ${indicateur}
-        <input type="text" value="${v.matricule || ''}" data-i="${i}" data-f="matricule" placeholder="Matricule" onchange="updateVal(this)" style="margin-top:4px;">
-        <label>
-          <input type="checkbox" data-i="${i}" onchange="togglePanne(this)" ${v.est_en_panne ? 'checked' : ''}>
-          <span class="label-text">Panne</span>
-        </label>
-      </td>
-      <td>
-        <div style="display: flex; flex-direction: column; gap: 4px;">
-          <input class="passager-input" type="number" value="${v.nb_passagers?.economique || 0}" data-i="${i}" data-f="eco" onchange="updatePassagers(this)" placeholder="Éco">
-          <input class="passager-input" type="number" value="${v.nb_passagers?.affaire || 0}" data-i="${i}" data-f="aff" onchange="updatePassagers(this)" placeholder="Affaire">
-        </div>
-      </td>
-
-      <td class="priceEco"></td>
-      <td class="priceAff"></td>
-      <td class="balisage"></td>
-    `;
+   tr.innerHTML = `
+ <td>
+  <input type="checkbox" class="vol-checkbox" value="${v.id}">
+  <div>${indexParGroupe[groupe]}</div>
+</td>
+  <td class="routes-cell">
+    ${v.estEscale ? `<div class="escale-indicator">[Escale]</div>` : ''}
+    <select onchange="changerGroupe(${i}, this.value)">
+      ${['Vol A','Vol B','Vol C'].map(g => `<option value="${g}" ${v.id.startsWith(g) ? 'selected' : ''}>${g}</option>`).join('')}
+    </select>
+    ${v.marque ? '<span class="star-mark">★</span>' : ''}
+    <select data-i="${i}" data-f="depart" onchange="updateRoute(this)">
+      ${airports.map(a => `<option ${a===v.depart?'selected':''}>${a}</option>`).join('')}
+    </select>
+    →
+    <select data-i="${i}" data-f="arrivee" onchange="updateRoute(this)">
+      ${airports.map(a => `<option ${a===v.arrivee?'selected':''}>${a}</option>`).join('')}
+    </select>
+  </td>
+  <td><input type="date" value="${v.date_depart}" data-i="${i}" data-f="date_depart" onchange="updateVal(this)"></td>
+  <td><input type="time" value="${v.heure_depart}" data-i="${i}" data-f="heure_depart" onchange="updateVal(this)"></td>
+  <td class="heureArrivee"></td>
+  <td class="avion-group">
+    <input type="text" value="${v.type_avion||''}" data-i="${i}" data-f="type_avion" placeholder="Type avion" onchange="updateVal(this)">
+    ${indicateur}
+    <input type="text" value="${v.matricule||''}" data-i="${i}" data-f="matricule" placeholder="Matricule" onchange="updateVal(this)">
+    <label><input type="checkbox" data-i="${i}" onchange="togglePanne(this)" ${v.est_en_panne?'checked':''}><span class="label-text">Panne</span></label>
+  </td>
+  <td class="passagers-cell">
+    <input class="passager-input" type="number" value="${v.nb_passagers?.economique||0}" data-i="${i}" data-f="eco" onchange="updatePassagers(this)" placeholder="Éco">
+    <input class="passager-input" type="number" value="${v.nb_passagers?.affaire||0}" data-i="${i}" data-f="aff" onchange="updatePassagers(this)" placeholder="Affaire">
+  </td>
+  <td class="priceEco"></td>
+  <td class="priceAff"></td>
+  <td class="balisage"></td>
+`;
 
     tbody.appendChild(tr);
 
-    // Affichage de l'heure d'arrivée selon le type de vol
-    if (v.estEscale) {
-      // Vol escale → heure arrivée saisie
-      tr.querySelector(".heureArrivee").textContent = v.heure_arrivee_saisie || "—";
-    } else if (v.heure_arrivee_saisie) {
-      // Tronçon avant escale → heure arrivée saisie
-      tr.querySelector(".heureArrivee").textContent = v.heure_arrivee_saisie;
-    } else {
-      // Vol normal sans escale → calcul
-      tr.querySelector(".heureArrivee").textContent = getArrivalTime(v) ?? "—";
-    }
+   const tdArrivee = tr.querySelector(".heureArrivee");
+
+if (v.estEscale && v.id.endsWith("-escale")) {
+  // Segment escale → destination finale : input éditable
+  tdArrivee.innerHTML = `<input type="time" value="${v.heure_arrivee_saisie || ''}" data-i="${i}" data-f="heure_arrivee_saisie" onchange="updateVal(this)">`;
+} else if (v.heure_arrivee_saisie) {
+  // Vol normal ou tronçon avant escale avec heure saisie
+  tdArrivee.innerHTML = `<input type="time" value="${v.heure_arrivee_saisie}" data-i="${i}" data-f="heure_arrivee_saisie" onchange="updateVal(this)">`;
+} else {
+  // Vol normal ou tronçon avant escale sans heure saisie : calculable ?
+  const arrival = getArrivalTime(v);
+  if (arrival) {
+    tdArrivee.innerHTML = `<input type="time" value="${arrival}" data-i="${i}" data-f="heure_arrivee_saisie" onchange="updateVal(this)">`;
+  } else {
+    // Impossible de calculer → input vide pour saisie utilisateur
+    tdArrivee.innerHTML = `<input type="time" value="" data-i="${i}" data-f="heure_arrivee_saisie" onchange="updateVal(this)">`;
+  }
+}
+
+
 
     setPrices(i);
     
@@ -1052,42 +1052,38 @@ function updateVal(el) {
   const f = el.dataset.f;
   const nv = el.value;
 
-  if (f === "groupe") {
-    vols[i].groupe = nv;
-
-    // Récupère l’avion du groupe cible
-    const avion = getAvionParGroupe(nv, vols);
-
-    // Met à jour le type avion + matricule
-    vols[i].type_avion = avion.type_avion;
-    vols[i].matricule = avion.matricule;
-
-    buildTable();  // Reconstruit le tableau pour mettre à jour les champs visuellement
-    return;
-  }
-
-  // Mise à jour classique
   vols[i][f] = nv;
 
-  // ⚡️ Si on modifie date_depart ou heure_depart, on met à jour heureArrivee dans la ligne
-  if (f === "date_depart" || f === "heure_depart") {
-    // Trouver la ligne correspondante (hors groupe)
-    const tbody = document.getElementById('tbodyVols');
-    const rows = [...tbody.querySelectorAll('tr:not(.group-row)')];
-    const row = rows.find(r => {
-      const btn = r.querySelector(`button.btn-echanger[data-i="${i}"]`);
-      return !!btn;
-    });
-    if (!row) return;
+  const tbody = document.getElementById('tbodyVols');
+  const row = [...tbody.querySelectorAll('tr:not(.group-row)')].find(r => {
+    const btn = r.querySelector(`button.btn-echanger[data-i="${i}"]`);
+    return !!btn;
+  });
 
-    const heureArriveeTd = row.querySelector('.heureArrivee');
-    if (heureArriveeTd) {
-      heureArriveeTd.textContent = getArrivalTime(vols[i]) ?? "—";
+  if (row) {
+    const tdArrivee = row.querySelector('.heureArrivee');
+
+    // Si c'est un vol escale-destination finale → input éditable
+    if (vols[i].estEscale && vols[i].id.endsWith("-escale")) {
+      tdArrivee.innerHTML = `<input type="time" value="${vols[i].heure_arrivee_saisie || ''}" data-i="${i}" data-f="heure_arrivee_saisie" onchange="updateVal(this)">`;
+    } else {
+      // Sinon calcul automatique de l'heure d'arrivée
+      const heureArriveeCalc = getArrivalTime(vols[i]);
+      tdArrivee.textContent = heureArriveeCalc ?? "—";
     }
-    // Mise à jour balisage et prix
-    setPrices(i);
   }
+
+  // Recalcul des prix/balisage
+  setPrices(i);
+
+  // Si modification du groupe → mise à jour avion + matricule
+  if (f === "groupe") {
+    const avion = getAvionParGroupe(nv, vols);
+    vols[i].type_avion = avion.type_avion;
+    vols[i].matricule = avion.matricule;
+    buildTable();
   }
+}
 
 
 function updateRoute(sel) {
@@ -1198,8 +1194,8 @@ function getSunriseForNextDay(codeIATA, dateStr) {
 // Calcule et met à jour prix et balisage dans la table
 function setPrices(i) {
   const v = vols[i];
-  
-  // Si vol escale, on force les prix à 0
+
+  // --- Prix ticket normal ---
   if (v.estEscale) {
     v.prix_ticket_eco = 0;
     v.prix_ticket_affaire = 0;
@@ -1213,6 +1209,7 @@ function setPrices(i) {
   const departStr = getDepartTime(v);
   v.heure_arrivee = arrivalStr || '';
 
+  // Cherche la ligne du vol dans le tableau
   const allRows = Array.from(document.querySelectorAll('#tbodyVols tr'));
   let volRowCount = -1;
   let targetRow = null;
@@ -1235,39 +1232,39 @@ function setPrices(i) {
   targetRow.querySelector('.priceEco').textContent = fmt(prixEcoTotal);
   targetRow.querySelector('.priceAff').textContent = fmt(prixAffTotal);
 
-  const key = `${v.type_avion}-${v.arrivee}`;
-  const coutAdema = couts[key]?.balisage_adema || 0;
-  const coutAsecna = couts[key]?.balisage_asecna || 0;
-  const balisageVal = coutAdema + coutAsecna;
+  // --- Balisage ---
+  const keyDep = `${v.type_avion}-${v.depart}`;
+  const keyArr = `${v.type_avion}-${v.arrivee}`;
 
-  const sunset = getSunsetForDate(v.arrivee, v.date_depart); // format HH:mm
-  const sunrise = getSunriseForNextDay(v.arrivee, v.date_depart); // format HH:mm
+  const coutDep = (couts[keyDep]?.balisage_adema || 0) + (couts[keyDep]?.balisage_asecna || 0);
+  const coutArr = (couts[keyArr]?.balisage_adema || 0) + (couts[keyArr]?.balisage_asecna || 0);
+
+  const sunsetDep = getSunsetForDate(v.depart, v.date_depart);
+  const sunriseDep = getSunriseForNextDay(v.depart, v.date_depart);
 
   const balisageCell = targetRow.querySelector('.balisage');
 
-  if (!arrivalStr || !departStr || !sunset || !sunrise) {
+  if (!arrivalStr || !departStr || !sunsetDep || !sunriseDep) {
     console.warn("Balisage fallback — données manquantes : ", {
-      arrivalStr, departStr, sunset, sunrise, vol: v
+      arrivalStr, departStr, sunsetDep, sunriseDep, vol: v
     });
-    balisageCell.textContent = balisageVal > 0 ? `Coût balisage : ${fmt(balisageVal)}` : "Pas de coût";
-    balisageCell.className = "balisage ok";
+    balisageCell.textContent = "Pas autorisé";
+    balisageCell.className = "balisage ko";
     return;
   }
 
   const arrivalMinutes = parseMinutes(arrivalStr);
   const departMinutes = parseMinutes(departStr);
-  const sunsetMinutes = parseMinutes(sunset);
-  const sunriseMinutes = parseMinutes(sunrise);
+  const sunsetMinutes = parseMinutes(sunsetDep);
+  const sunriseMinutes = parseMinutes(sunriseDep);
 
-  // On calcule 20 minutes avant le coucher du soleil
+  // Calcul marge de sécurité : départ max = sunset - 20 min
   const sunsetMinus20 = sunsetMinutes - 20;
 
   const isBetweenSunsetAndSunrise = (minutes) => {
-    // Nuit : après coucher du soleil ou avant lever du soleil
     return minutes >= sunsetMinutes || minutes <= sunriseMinutes;
   };
 
-  // Nouvelle condition : départ doit être entre sunrise et sunsetMinus20 (plage autorisée)
   const isDepartInAllowedWindow = (minutes) => {
     return minutes >= sunriseMinutes && minutes <= sunsetMinus20;
   };
@@ -1275,43 +1272,46 @@ function setPrices(i) {
   const depNeedsBalisage = isBetweenSunsetAndSunrise(departMinutes);
   const arrNeedsBalisage = isBetweenSunsetAndSunrise(arrivalMinutes);
 
-  const isDepartAfterSunsetMinus20 = departMinutes > sunsetMinus20;
-const isArrivalAfterSunsetMinus20 = arrivalMinutes > sunsetMinus20;
-
-
-let balisageFinal = balisageVal;
-if (isDepartAfterSunsetMinus20 && isArrivalAfterSunsetMinus20) {
-  balisageFinal = balisageVal * 2;
-}
-
-  // Condition "Pas autorisé" :  
-  // - heure départ en dehors de la plage autorisée (entre sunrise et sunset-20)
-  // - et pas de balisage possible (balisageVal == 0)
-  if (!isDepartInAllowedWindow(departMinutes) && balisageVal === 0) {
+  // 🚨 Condition "Pas autorisé"
+  if (!isDepartInAllowedWindow(departMinutes) && coutDep === 0) {
     balisageCell.textContent = "Pas autorisé";
     balisageCell.className = "balisage ko";
+    v.cout_balisage = 0;
     return;
   }
 
-  if (depNeedsBalisage || arrNeedsBalisage) {
-    if (balisageVal > 0) {
-      balisageCell.textContent = `${fmt(balisageFinal)}`;
-      balisageCell.className = "balisage ok";
-      v.cout_balisage = balisageFinal;
-    } else {
+  // 💡 Calcul du balisage total
+  let balisageFinal = 0;
+  if (depNeedsBalisage) {
+    if (coutDep > 0) balisageFinal += coutDep;
+    else {
       balisageCell.textContent = "Pas autorisé";
       balisageCell.className = "balisage ko";
       v.cout_balisage = 0;
+      return;
     }
+  }
+
+  if (arrNeedsBalisage) {
+    if (coutArr > 0) balisageFinal += coutArr;
+    else {
+      balisageCell.textContent = "Pas autorisé";
+      balisageCell.className = "balisage ko";
+      v.cout_balisage = 0;
+      return;
+    }
+  }
+
+  if (balisageFinal > 0) {
+    balisageCell.textContent = `${fmt(balisageFinal)}`;
+    balisageCell.className = "balisage ok";
+    v.cout_balisage = balisageFinal;
   } else {
     balisageCell.textContent = "Pas de coût";
     balisageCell.className = "balisage ok";
     v.cout_balisage = 0;
   }
-  console.log("setPrices key:", key, "couts[key]:", couts[key]);
-
 }
-
 
 
 // Mise à jour de tous les prix à chaque changement de taux
@@ -1432,7 +1432,8 @@ function toggleAjoutCout(detailId) {
 
 
 // Modification dans la fonction simulate() au niveau du calcul des coûts totaux
-function simulate() {
+function simulate(selectedVols = null) {
+  const volsToSimulate = selectedVols || vols;
   if (!vols || !carburant || !couts || !hebergement) {
     console.error('Données manquantes');
     return;
@@ -1494,7 +1495,7 @@ function simulate() {
   const cumulsParIndex = {};
   const escalesParIndex = {};
 
-  vols.forEach(v => {
+  volsToSimulate.forEach(v => {
     const idx = indexParGroupe[v.groupe];
 
     if (!cumulsParIndex[idx]) {
@@ -1776,6 +1777,14 @@ document.getElementById('resultats').innerHTML = html;
 
 }
 
+function getSelectedVols() {
+  const checkboxes = document.querySelectorAll('.vol-checkbox:checked');
+  const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+  return vols.filter(v => selectedIds.includes(v.id));
+}
+document.getElementById('btnSimulerSelection').addEventListener('click', () => {
+    simulate(getSelectedVols());
+});
 
 
 document.getElementById('btnSimuler').addEventListener('click', () => {
