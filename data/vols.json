@@ -126,6 +126,70 @@
   },
     "type_avion": "ATR72-600",
     "matricule": "5R-EJB"
+  },
+  {
+    "id": "Vol C1",
+    "depart": "TNR",
+    "arrivee": "DIE",
+    "date_depart": "2025-07-25",
+    "heure_depart": "09:30",
+    "distance_nm": 244,
+    "escale": false,
+    "approche": true,
+    "nb_passagers":  {
+    "economique": 52,
+    "affaire": 15
+  },
+    "type_avion": "ATR72-500",
+    "matricule": "5R-EJC"
+  },
+  {
+    "id": "Vol C2",
+    "depart": "DIE",
+    "arrivee": "TNR",
+    "date_depart": "2025-07-25",
+    "heure_depart": "11:00",
+    "distance_nm": 244,
+    "escale": false,
+    "approche": true,
+    "nb_passagers":  {
+    "economique": 52,
+    "affaire": 15
+  },
+    "type_avion": "ATR72-500",
+    "matricule": "5R-EJC"
+  },
+  {
+    "id": "Vol C3",
+    "depart": "TNR",
+    "arrivee": "SMS",
+    "date_depart": "2025-07-25",
+    "heure_depart": "15:30",
+    "distance_nm": 244,
+    "escale": false,
+    "approche": true,
+    "nb_passagers":  {
+    "economique": 50,
+    "affaire": 10
+  },
+    "type_avion": "ATR72-500",
+    "matricule": "5R-EJC"
+  },
+  {
+    "id": "Vol C4",
+    "depart": "SMS",
+    "arrivee": "TNR",
+    "date_depart": "2025-07-25",
+    "heure_depart": "18:00",
+    "distance_nm": 244,
+    "escale": false,
+    "approche": true,
+    "nb_passagers":  {
+    "economique": 50,
+    "affaire": 10
+  },
+    "type_avion": "ATR72-500",
+    "matricule": "5R-EJC"
   }
 ]
 
